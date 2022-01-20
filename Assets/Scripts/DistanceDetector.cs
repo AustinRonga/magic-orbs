@@ -12,11 +12,15 @@ public class DistanceDetector : MonoBehaviour
     public Transform SphereOrigin;
     private double RawDistanceSubtotal;
     private double CalculationDistance;
-    private double maxDistance = 27.8;
+    public double maxDistance = 27.8;
+    public double subtractDistance = 10;
     public float limitation = 1;
     public float initialSpeed;
+    public GameObject mContainmentOrb;
+    public Material mGoldMaterial;
+    public GameObject mGameMenu;
     private OrbControl SelectedOrb;
-
+    public double mWinCondition = 2.943;
     // Start is called before the first frame update
 
     void Start()
@@ -46,15 +50,19 @@ public class DistanceDetector : MonoBehaviour
             var SubOrbs = MagicOrbs.Except(CurrentOrb);
             foreach (var second_orb in SubOrbs)
             {
-                RawDistanceSubtotal += Math.Pow(Vector3.Distance(orb.transform.position, second_orb.transform.position), 2);
+                //                RawDistanceSubtotal += Math.Pow(Vector3.Distance(orb.transform.position, second_orb.transform.position), 2);
+                RawDistanceSubtotal += 1/(Math.Max(Math.Pow(Vector3.Distance(orb.transform.position, second_orb.transform.position),2), 0.000001));
             }
 
         }
-        CalculationDistance = Math.Sqrt(RawDistanceSubtotal);
+        //CalculationDistance = Math.Sqrt(RawDistanceSubtotal);
+        CalculationDistance = RawDistanceSubtotal;
         Debug.Log(CalculationDistance);
         foreach (var orb in MagicOrbs)
         {
-            orb.GetComponent<MeshRenderer>().material.color = Color.Lerp(Color.red, Color.green, ((float)CalculationDistance - 10) / (float)maxDistance);
+            float ColorLerper = ((float)CalculationDistance - (float)subtractDistance) / (float)maxDistance;
+            Debug.Log(ColorLerper);
+            orb.GetComponent<MeshRenderer>().material.color = Color.Lerp(Color.blue, Color.red, (float)Math.Sqrt(ColorLerper));
 
         }
 
@@ -72,52 +80,63 @@ public class DistanceDetector : MonoBehaviour
             oc.HighlightSelected();
         }
 
-       
-
-        if (SelectedOrb)
+        if (Input.GetKey(KeyCode.Escape))
         {
-            OrbControl oc = SelectedOrb.GetComponent<OrbControl>();
-            oc.HighlightSelected();
-            //SerializedObject haloComponent = new SerializedObject(SelectedOrb.GetComponent("Halo"));
-            //haloComponent.FindProperty("m_Color").colorValue = Color.white;
 
         }
 
-        if (SelectedOrb && Input.GetKey(KeyCode.W))
+        if (CalculationDistance < mWinCondition)
         {
-            var position = SelectedOrb.transform.position;
-            position += SelectedOrb.transform.forward * speed;
-            SelectedOrb.transform.position = position;
+            mContainmentOrb.GetComponent<MeshRenderer>().material = mGoldMaterial;
         }
-        if (SelectedOrb && Input.GetKey(KeyCode.A))
+
+        if (CalculationDistance > mWinCondition)
         {
-            var position = SelectedOrb.transform.position;
-            position -= SelectedOrb.transform.right * speed;
-            SelectedOrb.transform.position = position;
-        }
-        if (SelectedOrb && Input.GetKey(KeyCode.S))
-        {
-            var position = SelectedOrb.transform.position;
-            position -= SelectedOrb.transform.forward * speed;
-            SelectedOrb.transform.position = position;
-        }
-        if (SelectedOrb && Input.GetKey(KeyCode.D))
-        {
-            var position = SelectedOrb.transform.position;
-            position += SelectedOrb.transform.right * speed;
-            SelectedOrb.transform.position = position;
-        }
-        if (SelectedOrb && Input.GetKey(KeyCode.Space))
-        {
-            var position = SelectedOrb.transform.position;
-            position += SelectedOrb.transform.up * speed;
-            SelectedOrb.transform.position = position;
-        }
-        if (SelectedOrb && Input.GetKey(KeyCode.X))
-        {
-            var position = SelectedOrb.transform.position;
-            position -= SelectedOrb.transform.up * speed;
-            SelectedOrb.transform.position = position;
+            if (SelectedOrb)
+            {
+                OrbControl oc = SelectedOrb.GetComponent<OrbControl>();
+                oc.HighlightSelected();
+                //SerializedObject haloComponent = new SerializedObject(SelectedOrb.GetComponent("Halo"));
+                //haloComponent.FindProperty("m_Color").colorValue = Color.white;
+
+            }
+
+            if (SelectedOrb && Input.GetKey(KeyCode.W))
+            {
+                var position = SelectedOrb.transform.position;
+                position += SelectedOrb.transform.forward * speed;
+                SelectedOrb.transform.position = position;
+            }
+            if (SelectedOrb && Input.GetKey(KeyCode.A))
+            {
+                var position = SelectedOrb.transform.position;
+                position -= SelectedOrb.transform.right * speed;
+                SelectedOrb.transform.position = position;
+            }
+            if (SelectedOrb && Input.GetKey(KeyCode.S))
+            {
+                var position = SelectedOrb.transform.position;
+                position -= SelectedOrb.transform.forward * speed;
+                SelectedOrb.transform.position = position;
+            }
+            if (SelectedOrb && Input.GetKey(KeyCode.D))
+            {
+                var position = SelectedOrb.transform.position;
+                position += SelectedOrb.transform.right * speed;
+                SelectedOrb.transform.position = position;
+            }
+            if (SelectedOrb && Input.GetKey(KeyCode.Space))
+            {
+                var position = SelectedOrb.transform.position;
+                position += SelectedOrb.transform.up * speed;
+                SelectedOrb.transform.position = position;
+            }
+            if (SelectedOrb && Input.GetKey(KeyCode.X))
+            {
+                var position = SelectedOrb.transform.position;
+                position -= SelectedOrb.transform.up * speed;
+                SelectedOrb.transform.position = position;
+            }
         }
     }
 }
