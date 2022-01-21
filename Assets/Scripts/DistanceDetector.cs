@@ -20,7 +20,9 @@ public class DistanceDetector : MonoBehaviour
     public Material mGoldMaterial;
     public GameObject mGameMenu;
     private OrbControl SelectedOrb;
-    public double mWinCondition = 2.943;
+    public AudioSource mWinSound;
+    public double mWinCondition = 2.941;
+    private int mWinner = 0;
     // Start is called before the first frame update
 
     void Start()
@@ -88,6 +90,15 @@ public class DistanceDetector : MonoBehaviour
         if (CalculationDistance < mWinCondition)
         {
             mContainmentOrb.GetComponent<MeshRenderer>().material = mGoldMaterial;
+            //mWinSound = GetComponent<AudioSource>();
+            if (mWinner < 3)
+            {
+                mWinner += 1;
+            }
+        }
+        if (mWinner == 1)
+        {
+            mWinSound.PlayOneShot(mWinSound.clip);
         }
 
         if (CalculationDistance > mWinCondition)
